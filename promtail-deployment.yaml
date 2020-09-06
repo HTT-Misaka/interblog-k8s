@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    kompose.cmd: ./kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: promtail
+  name: promtail
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      io.kompose.service: promtail
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: promtail
+    spec:
+      containers:
+      - args:
+        - -config.file=/etc/promtail/docker-config.yaml
+        image: grafana/promtail:1.5.0
+        name: promtail
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/log
+          name: promtail-claim0
+      restartPolicy: Always
+      volumes:
+      - name: promtail-claim0
+        persistentVolumeClaim:
+          claimName: promtail-claim0
